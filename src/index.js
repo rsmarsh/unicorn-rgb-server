@@ -1,7 +1,8 @@
 import './env.js';
+import express from 'express';
+import { printHatInfo } from './unicorn.js';
 
 const server = express();
-const PORT = 3000;
 
 server.get('/', (req, res) => {
     console.log('root route hit');
@@ -11,3 +12,5 @@ server.get('/', (req, res) => {
 server.listen(process.env.PORT || 3000, () => {
     console.log('server up and running');
 });
+
+printHatInfo();
