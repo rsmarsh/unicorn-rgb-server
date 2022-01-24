@@ -1,0 +1,23 @@
+{
+  "name": "unicorn-rgb-server",
+  "version": "1.0.0",
+  "description": "Server to control lights via http requests on the Pimoroni UnicornHD RGB grid",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rsmarsh/unicorn-rgb-server.git"
+  },
+  "author": "rsmarsh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rsmarsh/unicorn-rgb-server/issues"
+  },
+  "homepage": "https://github.com/rsmarsh/unicorn-rgb-server#readme",
+  "dependencies": {
+    "express": "^4.17.2",
+    "unicornhat-hd": "^0.0.4"
+  }
+}
