@@ -1,0 +1,17 @@
+* {
+    box-sizing: border-box;
+}
+
+.row {
+    display: block;
+}
+
+.cell {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    max-width: calc(90vw/16);
+    max-height: calc(90vh/16);
+    border: 1px solid black;
+    cursor: pointer;
+}
