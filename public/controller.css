@@ -2,6 +2,13 @@
     box-sizing: border-box;
 }
 
+html {
+    overflow: hidden;
+}
+body {
+    background-color: #ddd;
+}
+
 .row {
     display: block;
 }
@@ -14,4 +21,19 @@
     max-height: calc(90vh/16);
     border: 1px solid black;
     cursor: pointer;
+}
+
+main {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.cell-colour {
+    display: block;
+    margin-top: 1rem;
+    width: 100px;
+    height: 50px;
 }
