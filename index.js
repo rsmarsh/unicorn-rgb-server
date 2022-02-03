@@ -1,12 +1,16 @@
-import './env.js';
+import './src/env.js';
+import * as path from 'path';
 import express from 'express';
 import { randomColour, randomPixel } from './src/utils.js';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const server = express();
 
-server.get('/', (req, res) => {
-    console.log('root route hit');
-    res.send('success');
+server.use(express.static('public'));
+
+
 });
 
 server.listen(process.env.PORT || 3000, () => {
