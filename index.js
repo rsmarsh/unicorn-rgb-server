@@ -1,6 +1,6 @@
 import './env.js';
 import express from 'express';
-import { printHatInfo } from './unicorn.js';
+import { randomColour, randomPixel } from './src/utils.js';
 
 const server = express();
 
