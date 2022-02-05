@@ -15,7 +15,7 @@ const hexToRgb = (hex) => {
 };
 
 const sendCellChangeRequest = (x, y, r, g, b) => {
-    fetch(`http://192.168.1.111:3000/pixel/set/${x}/${y}/${r}/${g}/${b}`);
+    fetch(`/pixel/set/${x}/${y}/${r}/${g}/${b}`);
 }
 
 const cellClicked = (x, y, cell) => {
