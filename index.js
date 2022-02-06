@@ -1,6 +1,9 @@
 import './src/env.js';
+import https from 'https';
+import http from 'http';
+import fs from 'fs';
 import express from 'express';
-import expressWs from 'express-ws';
+import { WebSocketServer } from 'ws';
 import { setPixel, clearAll } from './src/unicorn.js';
 import { rgbToHex, wrapDataForWs } from './src/utils.js';
 
@@ -24,11 +27,28 @@ const triggerPixelChange = (x, y, { r, g, b }) => {
 }
 
 const server = express();
-const wss = expressWs(server).getWss();
+server.use(express.static('public'));
+
+server.get('/pixel/clear', (req, res) => {
+    res.send('cleared');
+    pixelStates = {};
+    clearAll();
+});
+
+// serve the API with signed certificate on 443 (SSL/HTTPS) port
+const httpsServer = https.createServer({
+    key: fs.readFileSync('/etc/letsencrypt/live/isitnice.co.uk/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/isitnice.co.uk/fullchain.pem')
+}, server);
 
 
-const wsRouter = express.Router();
-wsRouter.ws('/echo', (ws, res) => {
+const wss = new WebSocketServer({
+    server: httpsServer,
+    path: '/ws'
+
+});
+
+wss.on('connection', (ws, res) => {
     // send the current grid state to the connected client
     ws.send(wrapDataForWs('grid-state', pixelStates));
 
@@ -55,15 +75,13 @@ wsRouter.ws('/echo', (ws, res) => {
     });
 });
 
-server.use(express.static('public'));
-server.use("/ws/", wsRouter);
-
-server.get('/pixel/clear', (req, res) => {
-    res.send('cleared');
-    pixelStates = {};
-    clearAll();
-})
-
-server.listen(process.env.PORT || 3000, () => {
-    console.log('server up and running');
+httpsServer.listen(3000, () => {
+    console.log('HTTPS Server up and running');
 });
+
+// HTTP server to upgrade non-secure requests to https
+const httpServer = http.createServer((req, res) => {
+    res.writeHead(302, { Location: `https://${req.headers.host}${req.url}` });
+    res.end();
+});
+httpServer.listen(3001);

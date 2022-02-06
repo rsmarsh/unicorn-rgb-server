@@ -21,6 +21,7 @@
     "dotenv": "^14.2.0",
     "express": "^4.17.2",
     "express-ws": "^5.0.2",
-    "unicornhat-hd": "^0.0.4"
+    "unicornhat-hd": "^0.0.4",
+    "ws": "^8.4.2"
   }
 }

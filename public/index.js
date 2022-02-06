@@ -13,7 +13,7 @@ const wsReceived = (msg) => {
             break;
     }
 }
-const ws = new WSClient('/ws/echo', {
+const ws = new WSClient('/ws', {
     message: wsReceived,
     connected: () => serverStatus.textContent = 'connected',
     error: () => serverStatus.textContent = 'error occured',
