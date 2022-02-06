@@ -24,21 +24,22 @@ class Controller {
     }
 
     applyCellColour(cell, hex) {
+        const { x, y } = cell.dataset;
+
+        if (!this.litCells[x]) {
+            this.litCells[x] = {};
+        } else if (this.litCells[x][y] === hex) {
+            // cell already painted in this colour, ignore
+            return;
+        }
+
+        this.litCells[x][y] = hex;
         cell.style.backgroundColor = hex;
     }
 
     cellClicked(x, y, cell) {
         const hexColour = this.colourInput.value;
 
-        if (!this.litCells[x]) {
-            this.litCells[x] = {};
-
-        } else if (this.litCells[x][y] === hexColour) {
-            // cell already painted in this colour, ignore
-            return;
-        }
-
-        this.litCells[x][y] = hexColour;
         this.applyCellColour(cell, hexColour);
 
         const { r, g, b } = this.hexToRgb(hexColour);
