@@ -43,7 +43,10 @@ wsRouter.ws('/echo', (ws, res) => {
             const payload = { x: data.payload.x, y: data.payload.y, hex: hexColour };
 
             wss.clients.forEach(client => {
-                client.send(wrapDataForWs('external-cell-change', payload));
+                // don't rebroadcast back to source client
+                if (client !== ws) {
+                    client.send(wrapDataForWs('external-cell-change', payload));
+                }
             });
 
         } else {
