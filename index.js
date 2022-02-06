@@ -2,7 +2,7 @@ import './src/env.js';
 import express from 'express';
 import expressWs from 'express-ws';
 import { setPixel, clearAll } from './src/unicorn.js';
-import { rgbToHex } from './src/utils.js';
+import { rgbToHex, wrapDataForWs } from './src/utils.js';
 
 let pixelsChanged = 0;
 const pixelStates = {};
@@ -20,31 +20,31 @@ const updateState = (x, y, { r, g, b }) => {
 const triggerPixelChange = (x, y, { r, g, b }) => {
     updateState(x, y, { r, g, b });
     setPixel(x, y, { r, g, b });
+    pixelsChanged += 1;
 }
 
 const server = express();
 expressWs(server);
 
-server.use(express.static('public'));
-
 const wsRouter = express.Router();
-
 wsRouter.ws('/echo', (ws, res) => {
-    ws.send(JSON.stringify(pixelStates));
+    // send the current grid state to the connected client
+    ws.send(wrapDataForWs('grid-state', pixelStates));
+
     ws.on('message', (msg) => {
         const data = JSON.parse(msg);
-        if (data.label === 'cellchange') {
+
+        if (data.label === 'cell-change') {
             triggerPixelChange(data.payload.x, data.payload.y, { r: data.payload.r, g: data.payload.g, b: data.payload.b });
+
         } else {
             console.log("unrecognised message label:", data.label);
         }
-    })
+    });
 });
 
+server.use(express.static('public'));
 server.use("/ws/", wsRouter);
-
-
-
 
 server.get('/pixel/clear', (req, res) => {
     res.send('cleared');

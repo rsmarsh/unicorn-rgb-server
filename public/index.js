@@ -10,7 +10,7 @@ const ws = new WSClient('/ws/echo', {
 });
 
 const cellChanged = (x, y, r, g, b) => {
-    const wsDataString = ws.wrapData('cellchange', { x, y, r, g, b });
+    const wsDataString = ws.wrapData('cell-change', { x, y, r, g, b });
     ws.send(wsDataString);
 };
 
