@@ -3,6 +3,8 @@ class Controller {
         this.cellChanged = cellChanged;
         this.gridWrapper = document.querySelector('.grid-wrapper');
         this.colourInput = document.querySelector('.cell-colour');
+        this.paintCount = document.querySelector('.paint-count');
+        this.paintCounter = 0;
         this.gridWidth = 16;
         this.gridHeight = 16;
         this.litCells = {};
@@ -59,6 +61,11 @@ class Controller {
         // Trigger the callback for an external handler to send requests
         this.cellClicked(cell.dataset.x, cell.dataset.y, cell);
     };
+
+    updatePaintCount(newCount) {
+        this.paintCounter = newCount;
+        this.paintCount.textContent = this.paintCounter;
+    }
 
     // Generates the 16x16 grid with event handlers
     // Existing cells may contain data of the current grid state, this typically occurs at start-up

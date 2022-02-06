@@ -51,6 +51,7 @@ const wss = new WebSocketServer({
 wss.on('connection', (ws, res) => {
     // send the current grid state to the connected client
     ws.send(wrapDataForWs('grid-state', pixelStates));
+    ws.send(wrapDataForWs('paint-count', { count: pixelsChanged }));
 
     ws.on('message', (msg) => {
         const data = JSON.parse(msg);

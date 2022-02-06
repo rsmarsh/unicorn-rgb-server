@@ -9,7 +9,12 @@ const wsReceived = (msg) => {
             break;
         case 'external-cell-change':
             const cell = controller.getCell(msg.payload.x, msg.payload.y);
-            controller.applyCellColour(cell, msg.payload.hex)
+            controller.applyCellColour(cell, msg.payload.hex);
+            controller.updatePaintCount(controller.paintCounter + 1)
+            break;
+        case 'paint-count':
+            controller.updatePaintCount(msg.payload.count);
+
             break;
     }
 }
@@ -22,6 +27,8 @@ const ws = new WSClient('/ws', {
 const cellChanged = (x, y, r, g, b) => {
     const wsDataString = ws.wrapData('cell-change', { x, y, r, g, b });
     ws.send(wsDataString);
+
+    controller.updatePaintCount(controller.paintCounter + 1)
 };
 
 const controller = new Controller(cellChanged);
