@@ -24,7 +24,8 @@ const triggerPixelChange = (x, y, { r, g, b }) => {
 }
 
 const server = express();
-expressWs(server);
+const wss = expressWs(server).getWss();
+
 
 const wsRouter = express.Router();
 wsRouter.ws('/echo', (ws, res) => {
@@ -36,6 +37,14 @@ wsRouter.ws('/echo', (ws, res) => {
 
         if (data.label === 'cell-change') {
             triggerPixelChange(data.payload.x, data.payload.y, { r: data.payload.r, g: data.payload.g, b: data.payload.b });
+
+            // wrap it back up and send to all connected clients
+            const hexColour = rgbToHex(data.payload.r, data.payload.g, data.payload.b);
+            const payload = { x: data.payload.x, y: data.payload.y, hex: hexColour };
+
+            wss.clients.forEach(client => {
+                client.send(wrapDataForWs('external-cell-change', payload));
+            });
 
         } else {
             console.log("unrecognised message label:", data.label);

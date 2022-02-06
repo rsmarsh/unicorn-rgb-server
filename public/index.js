@@ -2,7 +2,17 @@ import WSClient from './websocket-client.js';
 import Controller from './controller.js';
 const serverStatus = document.querySelector('.status');
 
-const wsReceived = (msg) => console.log(msg);
+const wsReceived = (msg) => {
+    switch (msg.label) {
+        case 'grid-state':
+            controller.generateGrid(msg.payload);
+            break;
+        case 'external-cell-change':
+            const cell = controller.getCell(msg.payload.x, msg.payload.y);
+            controller.applyCellColour(cell, msg.payload.hex)
+            break;
+    }
+}
 const ws = new WSClient('/ws/echo', {
     message: wsReceived,
     connected: () => serverStatus.textContent = 'connected',
