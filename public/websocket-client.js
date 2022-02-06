@@ -1,22 +1,23 @@
 class WSClient {
-    constructor(url, messageHandler) {
+    constructor(url, handlers) {
         if (!url) {
             console.error("WS Server URL must be provided");
         }
 
-        if (!messageHandler) {
+        if (!handlers.message) {
             console.warn('websocket handler callback function not provided');
             this.messageHandler = () => { };
         }
-        this.messageHandler = messageHandler;
+
+        this.messageHandler = handlers.message;
 
         const socketProtocol = (window.location.protocol === 'https:' ? 'wss:' : 'ws:');
         const echoSocketUrl = socketProtocol + '//' + window.location.hostname + url;
 
         this.wsConnection = this.#createConnection(echoSocketUrl);
-        this.wsConnection.onopen = () => console.log("server open");
+        this.wsConnection.onopen = () => handlers?.connected();
+        this.wsConnection.onerror = (err) => handlers?.error(err);
         this.wsConnection.onmessage = (evt) => this.#receive(evt.data);
-        this.wsConnection.onerror = this.#wsError
     };
 
     // Converts a JS object into a label/data ready to be sent via web socket
@@ -31,7 +32,6 @@ class WSClient {
 
     #createConnection(url) {
         const wsConnection = new WebSocket(url);
-        console.log("created WebSocket connection");
         return wsConnection;
     };
 
@@ -49,10 +49,6 @@ class WSClient {
         }
 
         this.messageHandler(dataFromServer);
-    };
-
-    #wsError(error) {
-        console.log("ws error: ", error);
     };
 };
 
