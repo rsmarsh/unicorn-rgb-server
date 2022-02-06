@@ -28,13 +28,6 @@ class Controller {
     applyCellColour(cell, hex) {
         const { x, y } = cell.dataset;
 
-        if (!this.litCells[x]) {
-            this.litCells[x] = {};
-        } else if (this.litCells[x][y] === hex) {
-            // cell already painted in this colour, ignore
-            return;
-        }
-
         this.litCells[x][y] = hex;
         cell.style.backgroundColor = hex;
     }
@@ -42,7 +35,12 @@ class Controller {
     cellClicked(x, y, cell) {
         const hexColour = this.colourInput.value;
 
-        this.applyCellColour(cell, hexColour);
+        if (this.litCells[x][y] === hexColour) {
+            // cell already painted in this colour, ignore
+            return;
+        }
+
+        this.applyCellColour(cell, hexColour, false);
 
         const { r, g, b } = this.hexToRgb(hexColour);
         this.cellChanged(x, y, r, g, b);
@@ -89,6 +87,7 @@ class Controller {
                 // initialise on the first pass
                 this.cellRefs[cellX] = this.cellRefs[cellX] || {};
                 this.cellRefs[cellX][cellY] = cell;
+                this.litCells[cellX] = this.litCells[cellX] || {};
 
                 cell.classList.add('cell');
                 cell.dataset.x = cellX;
