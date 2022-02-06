@@ -7,6 +7,7 @@ class Controller {
         this.gridHeight = 16;
         this.litCells = {};
         this.cellRefs = {};
+        this.mouseDown = false;
     };
 
     hexToRgb(hex) {
@@ -63,6 +64,8 @@ class Controller {
     generateGrid(existingCells) {
         this.gridWrapper.textContent = '';
         this.gridWrapper.addEventListener('touchmove', (e) => this.cellDraggedOver(e));
+        this.gridWrapper.addEventListener('mousedown', () => this.mouseDown = true);
+        this.gridWrapper.addEventListener('mouseup', () => this.mouseDown = false);
 
         // row
         for (let cellY = 0; cellY < this.gridHeight; cellY++) {
@@ -88,6 +91,7 @@ class Controller {
                 }
 
                 cell.addEventListener('click', () => this.cellClicked(cellX, cellY, cell));
+                cell.addEventListener('mouseover', () => this.mouseDown && this.cellClicked(cellX, cellY, cell));
                 row.appendChild(cell);
             }
         }
