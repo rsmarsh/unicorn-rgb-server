@@ -16,4 +16,4 @@ export const clearAll = () => {
 };
 
 clearAll();
-unicornHat.setBrightness(0.1);
+unicornHat.setBrightness(0.4);
