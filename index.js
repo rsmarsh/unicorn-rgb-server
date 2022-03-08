@@ -36,11 +36,30 @@ server.get('/pixel/clear', (req, res) => {
 });
 
 // serve the API with signed certificate on 443 (SSL/HTTPS) port
-const httpsServer = https.createServer({
-    key: fs.readFileSync('/etc/letsencrypt/live/isitnice.co.uk/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/isitnice.co.uk/fullchain.pem')
-}, server);
+const httpsServer = https.createServer(server);
 
+// an array of all the different https urls which will point to this application
+const urlList = JSON.parse(process.env.URLS);
+if (!Array.isArray(urlList)) {
+    throw Error('At least one domain must be specified in the .env file as an array. See .env.example');
+}
+
+
+// provide all the other https domain name certs to the server
+while (urlList.length > 0) {
+    const nextUrl = urlList.shift();
+
+    if (!nextUrl) {
+        throw Error('Malformed domain list error. See .env.example');
+    }
+
+    httpsServer.addContext(nextUrl, {
+        key: fs.readFileSync(`${process.env.HTTPS_PATH}/${nextUrl}/${process.env.HTTPS_KEY}`),
+        cert: fs.readFileSync(`${process.env.HTTPS_PATH}/${nextUrl}/${process.env.HTTPS_CERT}`)
+    });
+
+    console.log("Listening on https url: " + nextUrl);
+}
 
 const wss = new WebSocketServer({
     server: httpsServer,
@@ -77,7 +96,7 @@ wss.on('connection', (ws, res) => {
 });
 
 httpsServer.listen(3000, () => {
-    console.log('HTTPS Server up and running');
+    console.log('Server running and ready for requests');
 });
 
 // HTTP server to upgrade non-secure requests to https
