@@ -1,44 +1,28 @@
 import './src/env.js';
-import http from 'http';
-// import { setPixel, clearAll } from './src/unicorn.js';
-import { rgbToHex, wrapDataForWs } from './src/utils.js';
-
-const pixelStates = {};
-
-// Updates the state of the pixel array after each change
-const updateState = (x, y, { r, g, b }) => {
-    if (!pixelStates[x]) {
-        pixelStates[x] = {}
-    }
-
-    const hex = rgbToHex(r, g, b);
-    pixelStates[x][y] = hex;
-};
+import { setPixel, clearAll } from './src/unicorn.js';
+import express from 'express';
 
 const triggerPixelChange = (x, y, { r, g, b }) => {
     setPixel(x, y, { r, g, b });
 }
 
-const server = http.createServer();
-
-server.get('/', (req, res) => {
-    console.log("request received at root ")
-});
+const server = express();
 
 server.get('/pixel/clear', (req, res) => {
-    res.send('cleared');
-    pixelStates = {};
     clearAll();
+    res.sendStatus(200)
 });
 
-server.get('/pixel/:x/:y/:r/:g/:b', (req, res) => {
+server.get('/pixel/set/:x/:y/:r/:g/:b', (req, res) => {
     const { x, y, r, g, b } = req.params;
-    // triggerPixelChange(x, y, { r, g, b });
-    console.log("get request received")
-    res.send('set');
-})
+    triggerPixelChange(x, y, { r, g, b });
+    res.sendStatus(200);
+});
 
+server.get('/', (req, res) => res.sendStatus(404));
 
-server.listen(process.env.PORT || 3000, () => {
-    console.log(`Unicorn server up on port ${process.env.URLS} and ready for requests`);
+const PORT = process?.env?.PORT || 3000;
+
+server.listen(PORT, () => {
+    console.log(`Unicorn server up on port ${PORT} and ready for requests`);
 });
